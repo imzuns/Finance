@@ -101,3 +101,5 @@ st.download_button(
     file_name=f"kospi_disparity_{window}d_{latest_date}.csv",
     mime="text/csv",
 )
+
+st.page_link("pages/2_종목_상세.py", label="→ 종목 상세(수급 추이) 페이지로 이동", icon="📈")

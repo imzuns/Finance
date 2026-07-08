@@ -58,4 +58,6 @@ fig.add_hline(y=100, line_color="rgba(255,255,255,0.3)", row=2, col=1)
 fig.update_layout(height=700, template="plotly_dark", hovermode="x unified", legend=dict(orientation="h", y=1.08))
 st.plotly_chart(fig, use_container_width=True)
 
-st.page_link("pages/1_종목_스크리닝.py", label="→ 종목 스크리닝 페이지로 이동", icon="🔎")
+nav1, nav2 = st.columns(2)
+nav1.page_link("pages/1_종목_스크리닝.py", label="→ 종목 스크리닝 페이지로 이동", icon="🔎")
+nav2.page_link("pages/2_종목_상세.py", label="→ 종목 상세(수급 추이) 페이지로 이동", icon="📈")

@@ -7,3 +7,5 @@ data_cache/
 .env
 streamlit_out.log
 streamlit_err.log
+cf_out.log
+cf_err.log
