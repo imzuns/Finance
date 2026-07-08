@@ -4,12 +4,15 @@ import pandas as pd
 import streamlit as st
 
 from src import data
+from src import relative_strength as rs
 from src.disparity import classify, disparity
 
 st.set_page_config(page_title="종목 스크리닝", layout="wide", page_icon="🔎")
 
+st.sidebar.title("추추 도우미")
+st.sidebar.divider()
 st.sidebar.header("분석 설정")
-window = st.sidebar.selectbox("이동평균 기간", [20, 60, 120], index=0, key="ma_window")
+window = st.sidebar.selectbox("이동평균 기간", [50, 60, 120], index=0, key="ma_window")
 low_th = st.sidebar.slider("과매도 임계값", 80, 100, 95, key="low_threshold")
 high_th = st.sidebar.slider("과매수 임계값", 100, 130, 105, key="high_threshold")
 
@@ -26,7 +29,7 @@ except Exception as e:
     st.info("`.env` 파일의 KRX_ID / KRX_PW가 올바르게 설정되어 있는지 확인해주세요.")
     st.stop()
 
-trading_dates = tuple(d.strftime("%Y%m%d") for d in idx.tail(140).index)
+trading_dates = tuple(d.strftime("%Y%m%d") for d in idx.tail(145).index)
 latest_date = trading_dates[-1]
 
 with st.spinner("전 종목 시세 수집 중... (최초 로딩 시 1~2분 소요될 수 있습니다)"):
@@ -39,6 +42,7 @@ with st.spinner("전 종목 시세 수집 중... (최초 로딩 시 1~2분 소�
 
 available = [t for t in tickers if t in close_matrix.columns]
 sub = close_matrix[available]
+ratings = rs.universe_rs_ratings(sub)
 
 rows = []
 for t in available:
@@ -52,6 +56,7 @@ for t in available:
         "종목명": names.get(t, t),
         "종가": close.iloc[-1],
         f"{window}일 이격도": round(val, 2),
+        "RS(6개월)": ratings.get(t),
         "상태": classify(val, low_th, high_th),
         "시가총액": caps.loc[t, "market_cap"] if caps is not None and t in caps.index else None,
     })
@@ -102,4 +107,4 @@ st.download_button(
     mime="text/csv",
 )
 
-st.page_link("pages/2_종목_상세.py", label="→ 종목 상세(수급 추이) 페이지로 이동", icon="📈")
+st.page_link("pages/2_종목_상세.py", label="→ 종목 상세 페이지로 이동", icon="📈")

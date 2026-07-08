@@ -87,12 +87,3 @@ def get_stock_ohlcv(ticker: str, start: str, end: str) -> pd.DataFrame:
         "종가": "close", "거래량": "volume",
     })
     return df
-
-
-@st.cache_data(ttl=60 * 60 * 6, show_spinner=False)
-def get_investor_trading(ticker: str, start: str, end: str) -> pd.DataFrame:
-    df = _retry(stock.get_market_trading_value_by_date, start, end, ticker)
-    df = df.rename(columns={
-        "개인": "individual", "외국인합계": "foreign", "기관합계": "institution",
-    })
-    return df[["individual", "foreign", "institution"]]
