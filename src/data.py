@@ -7,6 +7,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+try:
+    for key in ("KRX_ID", "KRX_PW"):
+        if key in st.secrets:
+            os.environ[key] = st.secrets[key]
+except Exception:
+    pass
+
 from pykrx import stock
 
 KOSPI_INDEX_TICKER = "1001"
