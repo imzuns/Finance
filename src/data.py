@@ -62,14 +62,11 @@ def get_ticker_names(tickers: tuple[str, ...]) -> dict[str, str]:
 
 
 @st.cache_data(ttl=60 * 60 * 6, show_spinner=False)
-def get_close_matrix(trading_dates: tuple[str, ...], _progress_cb=None) -> pd.DataFrame:
+def get_close_matrix(trading_dates: tuple[str, ...]) -> pd.DataFrame:
     rows = {}
-    total = len(trading_dates)
-    for i, d in enumerate(trading_dates):
+    for d in trading_dates:
         snap = _retry(stock.get_market_ohlcv, d, market=MARKET)
         rows[d] = snap["종가"]
-        if _progress_cb is not None:
-            _progress_cb((i + 1) / total)
     matrix = pd.DataFrame(rows).T
     matrix.index = pd.to_datetime(matrix.index)
     matrix = matrix.sort_index()

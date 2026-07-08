@@ -29,23 +29,13 @@ except Exception as e:
 trading_dates = tuple(d.strftime("%Y%m%d") for d in idx.tail(140).index)
 latest_date = trading_dates[-1]
 
-progress_placeholder = st.empty()
-bar = progress_placeholder.progress(0, text="전 종목 시세 수집 중...")
-
-
-def _cb(frac: float):
-    bar.progress(frac, text=f"전 종목 시세 수집 중... {frac * 100:.0f}%")
-
-
-with st.spinner("구성종목 데이터 처리 중..."):
-    close_matrix = data.get_close_matrix(trading_dates, _progress_cb=_cb)
+with st.spinner("전 종목 시세 수집 중... (최초 로딩 시 1~2분 소요될 수 있습니다)"):
+    close_matrix = data.get_close_matrix(trading_dates)
     names = data.get_ticker_names(tuple(tickers))
     try:
         caps = data.get_market_caps(latest_date)
     except Exception:
         caps = None
-
-progress_placeholder.empty()
 
 available = [t for t in tickers if t in close_matrix.columns]
 sub = close_matrix[available]
