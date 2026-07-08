@@ -67,20 +67,21 @@ fig1.update_layout(
 )
 st.plotly_chart(fig1, use_container_width=True)
 
-st.subheader("투자자별 수급 추이 (최근 1개월, 순매수대금 억원)")
+st.subheader("투자자별 누적 수급 추이 (최근 1개월, 순매수대금 억원)")
 
 flow_month = (flow.tail(20) / 1e8).round(1)
+flow_cum = flow_month.cumsum()
 
 fig2 = go.Figure()
-fig2.add_trace(go.Bar(x=flow_month.index, y=flow_month["individual"], name="개인", marker_color="#94A3B8"))
-fig2.add_trace(go.Bar(x=flow_month.index, y=flow_month["foreign"], name="외국인", marker_color="#3B82F6"))
-fig2.add_trace(go.Bar(x=flow_month.index, y=flow_month["institution"], name="기관", marker_color="#F59E0B"))
+fig2.add_trace(go.Scatter(x=flow_cum.index, y=flow_cum["individual"], name="개인", line=dict(color="#94A3B8")))
+fig2.add_trace(go.Scatter(x=flow_cum.index, y=flow_cum["foreign"], name="외국인", line=dict(color="#3B82F6")))
+fig2.add_trace(go.Scatter(x=flow_cum.index, y=flow_cum["institution"], name="기관", line=dict(color="#F59E0B")))
 fig2.add_hline(y=0, line_color="rgba(255,255,255,0.3)")
 fig2.update_layout(
-    barmode="group", height=400, template="plotly_dark", hovermode="x unified",
-    legend=dict(orientation="h", y=1.1), yaxis_title="억원",
+    height=400, template="plotly_dark", hovermode="x unified",
+    legend=dict(orientation="h", y=1.1), yaxis_title="누적 순매수대금 (억원)",
 )
 st.plotly_chart(fig2, use_container_width=True)
 
-table = flow_month.rename(columns={"individual": "개인", "foreign": "외국인", "institution": "기관"})
+table = flow_cum.rename(columns={"individual": "개인", "foreign": "외국인", "institution": "기관"})
 st.dataframe(table.sort_index(ascending=False), use_container_width=True)
